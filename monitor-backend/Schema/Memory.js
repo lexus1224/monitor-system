@@ -1,4 +1,4 @@
-const {db, mongoose} = require('../db/db.js');
+const {db, mongoose} = require('../db/db');
 
 // 定义并创建Schema
 let memorySchema = new mongoose.Schema({

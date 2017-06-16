@@ -38,8 +38,9 @@ class MonitorClient {
   }
 
   _autoMonitorPlatform() {
-    let browser = platformUtil.getBrowserCategory();
-    let system = platformUtil.getOperateSystem();
+    let monitorPlatformURL = this.opt.monitorPlatforURL;
+    let browser = platformUtil.getBrowser();
+    let system = platformUtil.getSystem();
 
     post(monitorPlatformURL, {
       'browser': browser,

@@ -11,17 +11,19 @@
 
   export default {
     mounted () {
-      let that = this
+      let self = this
       let requestURL = cons.queryMemoryPath
-      axios.get(requestURL)
-        .then(function (responseData) {
-          let memoryInfo = responseData.data
-          that.drawChart(memoryInfo)
-        })
+      this.chart = echarts.init(document.getElementById('chart_memory'))
+      setInterval(function () {
+        axios.get(requestURL)
+          .then(function (responseData) {
+            let memoryInfo = responseData.data
+            self.drawChart(memoryInfo)
+          })
+      }, 1000)
     },
     methods: {
       drawChart: function (chartData) {
-        let chart = echarts.init(document.getElementById('chart_memory'))
         let options = {
           title: {
             text: '内存使用分布情况'
@@ -150,7 +152,7 @@
             }
           ]
         }
-        chart.setOption(options)
+        this.chart.setOption(options)
       }
     }
   }

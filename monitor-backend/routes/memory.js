@@ -1,5 +1,5 @@
 const router = require('koa-router')()
-const {MemoryModel, mongoose} = require('../Model/Memory.js');
+const {MemoryModel} = require('../Model/Memory');
 
 router.prefix('/memory')
 
