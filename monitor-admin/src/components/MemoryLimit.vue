@@ -62,14 +62,9 @@
               type: 'category',
               boundaryGap: false,
               scale: true,
-              data: (function () {
-                let d = []
-                let beginTimestamp = chartData[0].time
-                chartData.forEach((data) => {
-                  d.push((Math.round((data.time - beginTimestamp) / 1000)))
-                })
-                return d
-              })()
+              data: chartData.map((data) => {
+                return Math.round((data.time - chartData[0].time) / 1000)
+              })
             }
           ],
           yAxis: [
@@ -102,7 +97,7 @@
               name: '限制最大内存',
               type: 'line',
               markPoint: {
-                symbolSize: 65,
+                symbolSize: 80,
                 data: [
                   {type: 'max', name: '最大值'},
                   {type: 'min', name: '最小值'}
@@ -113,13 +108,9 @@
                   {type: 'average', name: '平均值'}
                 ]
               },
-              data: (function () {
-                let d = []
-                chartData.forEach((data) => {
-                  d.push(Math.round(data.usedJSHeapSize / 1024))
-                })
-                return d
-              })()
+              data: chartData.map((data) => {
+                return Math.round(data.jsHeapSizeLimit / 1024)
+              })
             }
           ]
         }

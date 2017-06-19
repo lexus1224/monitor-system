@@ -36,7 +36,7 @@ router.get('/query', async (ctx, next) => {
 
 		return memories;
 	});
-	
+
 	ctx.body = result;
 });
 

@@ -11,8 +11,15 @@
     <el-submenu index="2">
       <template slot="title">平台监控</template>
       <el-menu-item-group title="">
-        <el-menu-item index="/browser">浏览器使用份额统计</el-menu-item>
-        <el-menu-item index="/operateSystem">操作系统使用份额统计</el-menu-item>
+        <el-menu-item index="/browser">浏览器份额统计</el-menu-item>
+        <el-menu-item index="/system">操作系统份额统计</el-menu-item>
+      </el-menu-item-group>
+    </el-submenu>
+
+    <el-submenu index="3">
+      <template slot="title">性能监控</template>
+      <el-menu-item-group title="">
+        <el-menu-item index="/time">页面加载时间</el-menu-item>
       </el-menu-item-group>
     </el-submenu>
 

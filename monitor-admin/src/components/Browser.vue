@@ -6,146 +6,75 @@
 
 <script>
   import echarts from 'echarts'
-  import axios from 'axioselfs'
+  import axios from 'axios'
   import cons from '../constant/constant.js'
 
   export default {
     mounted () {
       let self = this
       let requestURL = cons.queryPlatformPath
-      let systemStat = new Map(
+      let browserStat = new Map(
         [
-          ['WinPhone', 0],
-          ['Windows', 0],
-          ['macOS', 0],
-          ['Android', 0],
-          ['iOS', 0],
-          ['Linux', 0],
-          ['Others', 0],
+          ['IE', 0],
+          ['Edge', 0],
+          ['猎豹', 0],
+          ['UC', 0],
+          ['360', 0],
+          ['百度', 0],
+          ['搜狗', 0],
+          ['Chrome', 0],
+          ['Firefox', 0],
+          ['Opera', 0],
+          ['Safari', 0],
+          ['QQ', 0]
         ]
       )
-      let windowsStat = new Map(
+      let IEStat = new Map(
         [
-          ['WindowsXP', 0],
-          ['Vista', 0],
-          ['Win7', 0],
-          ['Win8', 0],
-          ['Win10', 0],
-          ['WinNT', 0]
-        ]
-      )
-      let androidStat = new Map(
-        [
-          ['Android4.0', 0],
-          ['Android5.0', 0],
-          ['Android6.0', 0],
-          ['Android7.0', 0]
-        ]
-      )
-      let iosStat = new Map(
-        [
-          ['iOS6', 0],
-          ['iOS7', 0],
-          ['iOS8', 0],
-          ['iOS9', 0],
-          ['iOS10', 0],
-          ['iOS11', 0]
+          ['IE6', 0],
+          ['IE7', 0],
+          ['IE8', 0],
+          ['IE9', 0],
+          ['IE10', 0],
+          ['IE11', 0]
         ]
       )
       axios.get(requestURL)
         .then(function (responseData) {
           let platformInfo = responseData.data
-          platformInfo.forEach(function (item) {
-            let systemType = item.system
-            if (systemType.indexOf('WinPhone') > -1) {
-              let value = systemStat.get(['WinPhone'])
-              systemStat.set(['WinPhone', ++value])
-            }
-            else if (systemType.indexOf('Win') > -1 || systemType.indexOf('Vista') > -1) {
-              let version = systemType.toString()
-              let sValue = systemStat.get(['Windows'])
-              let wValue = windowsStat.get([version])
-              systemStat.set(['Windows', ++sValue])
-              windowsStat.set([version, ++wValue])
-            }
-            else if (systemType.indexOf('macOS') > -1) {
-              let value = systemStat.get(['macOS'])
-              systemStat.set(['macOS', ++value])
-            }
-            else if (systemType.indexOf('Android') > -1) {
-              let version = systemType.toString()
-              let sValue = systemStat.get(['Android'])
-              let aValue = androidStat.get([version])
-              systemStat.set(['Android', ++sValue])
-              androidStat.set([version, ++aValue])
-            }
-            else if (systemType.indexOf('iOS') > -1) {
-              let version = systemType.toString()
-              let sValue = systemStat.get(['iOS'])
-              let iValue = iosStat.get([version])
-              systemStat.set(['iOS', ++sValue])
-              iosStat.set([version, ++iValue])
-            }
-            else if (systemType.indexOf('Linux') > -1) {
-              let value = systemStat.get(['Linux'])
-              systemStat.set(['Linux', ++value])
-            }
-            else {
-              let value = systemStat.get(['Others'])
-              systemStat.set(['Others', ++value])
+          platformInfo.forEach((item) => {
+            let browserType = item.browser
+            let value = browserStat.get([browserType])
+            browserStat.set([browserType, ++value])
+            if (browserType.indexOf('IE') > -1) {
+              let value = IEStat.get([browserType])
+              IEStat.set([browserType, ++value])
             }
           })
+          this.browserData = this.strMapToObj(browserStat)
+          this.IEData = this.strMapToObj(IEStat)
+          this.chart = echarts.init(document.getElementById('chart_platform'))
+          self.drawChart()
+          self.clickAction()
         })
-      this.systemData= this.strMapToObj(systemStat)
-      this.windowsData= this.strMapToObj(windowsStat)
-      this.androidData= this.strMapToObj(androidStat)
-      this.iosData= this.strMapToObj(iosStat)
-      this.chart = echarts.init(document.getElementById('chart_platform'))
-      self.drawChart()
-      self.clickAction()
     },
     data () {
       return {
         legend: ['Windows', 'macOS', 'Linux', 'Android', 'iOS', 'WinPhone', 'Others'],
 
-        systemData: [
-          {value: 335, name: 'Windows'},
-          {value: 310, name: 'macOS'},
-          {value: 234, name: 'Linux'},
-          {value: 1048, name: 'Android'},
-          {value: 251, name: 'iOS'},
-          {value: 147, name: 'WinPhone'},
-          {value: 102, name: 'Others'}
-        ],
-        windowsData: [
-          {value: 350, name: 'XP'},
-          {value: 679, name: 'win7'},
-          {value: 279, name: 'win8'},
-          {value: 1548, name: 'win10'}
-        ],
-        androidData: [
-          {value: 335, name: 'Android4.0'},
-          {value: 1679, name: 'Android5.0'},
-          {value: 548, name: 'Android6.0+'}
-        ],
-        iosData: [
-          {value: 335, name: 'ios7'},
-          {value: 479, name: 'ios8'},
-          {value: 979, name: 'ios9'},
-          {value: 1548, name: 'ios10'}
-        ]
+        browserData: [],
+        IEData: []
       }
     },
     methods: {
       strMapToObj: function (strMap) {
-        let obj = Object.create(null);
+        let obj = Object.create(null)
         for (let [k, v] of strMap) {
-          obj[value] = v
-          obj[name] = k
+          obj[k] = v
         }
-        return obj;
+        return obj
       },
-      drawChart: function (detailData) {
+      drawChart: function () {
         let options = {
           tooltip: {
             trigger: 'item'
@@ -158,7 +87,7 @@
           },
           series: [
             {
-              name: '系统版本',
+              name: 'IE版本',
               type: 'pie',
               selectedMode: 'single',
               radius: [0, '30%'],
@@ -172,36 +101,17 @@
                   show: false
                 }
               },
-              data: detailData
+              data: this.IEData
             },
             {
-              name: '操作系统',
+              name: '浏览器分类',
               type: 'pie',
-              radius: ['40%', '55%'],
-              data: this.systemData
+              radius: ['40%', '60%'],
+              data: this.browserData
             }
           ]
         }
         this.chart.setOption(options)
-      },
-      clickAction: function () {
-        let self = this
-        this.chart.on('click', function (params) {
-          let name = params.name
-          switch (name) {
-            case 'Windows':
-              self.drawChart(self.windowsData)
-              break
-            case 'Android':
-              self.drawChart(self.androidData)
-              break
-            case 'iOS':
-              self.drawChart(self.iosData)
-              break
-            default:
-              self.drawChart()
-          }
-        })
       }
     }
   }

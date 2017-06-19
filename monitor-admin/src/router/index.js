@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import MemoryLimit from '@/components/MemoryLimit'
 import MemoryUsed from '@/components/MemoryUsed'
 import Browser from '@/components/Browser'
-import OperateSystem from '@/components/OperateSystem'
+import System from '@/components/System'
+import Time from '@/components/Time'
 
 Vue.use(Router)
 
@@ -25,9 +26,14 @@ export default new Router({
       component: Browser
     },
     {
-      path: '/operateSystem',
-      name: 'OperateSystem',
-      component: OperateSystem
+      path: '/system',
+      name: 'System',
+      component: System
+    },
+    {
+      path: '/time',
+      name: 'Time',
+      component: Time
     }
   ]
 })
