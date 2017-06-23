@@ -77,7 +77,8 @@ let cons = {
   'monitorMemoryGap': 1000,
   'monitorMemoryURL': domain + '/memory/log',
   'monitorTimeURL': domain + '/time/log',
-  'monitorPlatformURL': domain + '/platform/log'
+  'monitorPlatformURL': domain + '/platform/log',
+  'monitorAPIURL': domain + '/api/log'
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (cons);
@@ -141,11 +142,11 @@ const collectTime = function () {
     return null;
   }
 
-  let time = window.performance.time;
+  let timing = window.performance.timing;
   let timeCollector = {
-    whiteScreenTime: time.domLoading - time.fetchStart,
-    domReadyTime: time.domComplete - time.fetchStart,
-    onLoadTime: time.loadEventEnd - time.fetchStart
+    whiteScreenTime: timing.domLoading - timing.fetchStart,
+    domReadyTime: timing.domContentLoadedEventEnd - timing.fetchStart,
+    onLoadTime: timing.loadEventEnd - timing.fetchStart
   };
   return timeCollector;
 };
@@ -160,51 +161,89 @@ const collectTime = function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return getSystem; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return getBrowser; });
-const getBrowser = function () {
-  let userAgent = navigator.userAgent.toLowerCase();
-  let browser = {
-    "IE6": /msie 6.0/.test(userAgent), // IE6
-    "IE7": /msie 7.0/.test(userAgent), // IE7
-    "IE8": /msie 8.0/.test(userAgent), // IE8
-    "IE9": /msie 9.0/.test(userAgent), // IE9
-    "IE10": /msie 10.0/.test(userAgent), // IE10
-    "IE11": /msie 11.0/.test(userAgent), // IE11
-    "Edge": /edge/.test(userAgent), // IE11
-    "猎豹": /lbbrowser/.test(userAgent), // 猎豹浏览器
-    "UC": /ucweb/.test(userAgent), // UC浏览器
-    "360": /360se/.test(userAgent), // 360浏览器
-    "百度": /baidubrowser/.test(userAgent), // 百度浏览器
-    "搜狗": /metasr/.test(userAgent), // 搜狗浏览器
-    "Chrome": /chrome/.test(userAgent), //Chrome浏览器
-    "Firefox": /firefox/.test(userAgent), // 火狐浏览器
-    "Opera": /opera/.test(userAgent), // Opera浏览器
-    "Safari": /safari/.test(userAgent) && !(/chrome/.test(userAgent)), // safire浏览器
-    "QQ": /qqbrowser/.test(userAgent) //qq浏览器
+const getBrowser = function (userAgent) {
+  // let userAgent = navigator.userAgent;
+  let browserName = '';
+  let browserVersion = '';
+  let browserKernel = '';
+  let browserKernelVersion = '';
+  let browserCollect = {
+    "IE": /msie/i.test(userAgent), // IE
+    "Edge": /edge/i.test(userAgent), // Edge
+    "猎豹": /lbbrowser/i.test(userAgent), // 猎豹浏览器
+    "UC": /ucweb/i.test(userAgent), // UC浏览器
+    "360": /360se/i.test(userAgent), // 360浏览器
+    "百度": /baidubrowser/i.test(userAgent), // 百度浏览器
+    "搜狗": /metasr/i.test(userAgent), // 搜狗浏览器
+    "Firefox": /firefox/i.test(userAgent), // 火狐浏览器
+    "Opera": /opera/i.test(userAgent), // Opera浏览器
+    "Safari": /safari/i.test(userAgent) && !(/chrome/i.test(userAgent)), // safire浏览器
+    "QQ": /qqbrowser/i.test(userAgent), //qq浏览器
+    "Chrome": /chrome/i.test(userAgent) //Chrome浏览器
   };
-  for (let i in browser) {
-    if (browser.hasOwnProperty(i) && browser[i] === true) {
-      return i;
+
+  if (/msie\s(\d.\d)/i.test(userAgent)) {
+    browserVersion = RegExp['$1'];
+  } else if (/chrome\/(\d+.\d+)/i.test(userAgent)) {
+    browserVersion = (RegExp['$1']).toString();
+  } else if (/firefox\/(\d+.\d+)/i.test(userAgent)) {
+    browserVersion = (RegExp['$1']).toString();
+  } else if (/version\/(\d+.\d+)/i.test(userAgent)) {
+    browserVersion = (RegExp['$1']).toString();
+  } else if (/maxthon\s(\d+.\d+)/i.test(userAgent)) {
+    browserVersion = (RegExp['$1']).toString();
+  }
+
+  if (/apple(webkit)\/(\d+.\d+)/i.test(userAgent)) {
+    browserKernel = RegExp['$1'];
+    browserKernelVersion = (RegExp['$2']).toString();
+  } else if (/(trident)\/(\d.\d)/i.test(userAgent)) {
+    browserKernel = RegExp['$1'];
+    browserKernelVersion = (RegExp['$2']).toString();
+  } else if (/(gecko)\/(\d+)/i.test(userAgent)) {
+    browserKernel = RegExp['$1'];
+    browserKernelVersion = (RegExp['$2']).toString();
+  } else if (/(presto)\/(\d+.\d+)/i.test(userAgent)) {
+    browserKernel = RegExp['$1'];
+    browserKernelVersion = (RegExp['$2']).toString();
+  } else {
+    browserKernel = 'Others';
+    browserKernelVersion = '';
+  }
+
+  for (let i in browserCollect) {
+    if (browserCollect.hasOwnProperty(i) && browserCollect[i] === true) {
+      browserName = i;
+      break;
     }
   }
+
+  return {
+    browserName: browserName,
+    browserVersion: browserVersion,
+    browserKernel: browserKernel,
+    browserKernelVersion: browserKernelVersion
+  }
+
 }
 
 //检测操作系统
-const getSystem = function () {
+const getSystem = function (userAgent) {
   let system = {
     ios: false,
     android: false,
-    winMobile: false,
     win: false,
-    mac: false,
-    linux: false
+    mac: false
   };
 
-  let userAgent = navigator.userAgent;
-  let platform = navigator.platform;
+  // let userAgent = navigator.userAgent;
+  let systemName = '';
+  let systemVersion = '';
 
-  system.win = (platform.indexOf('Win') === 0);
-  system.mac = (platform.indexOf('Mac') === 0);
-  system.linux = ( platform.indexOf('Linux') > -1) ? 'Linux' : false;
+  system.win = (userAgent.indexOf('Win') > -1) ? 'Windows' : '';
+  system.ios = ((userAgent.indexOf('iPhone') > -1) || (userAgent.indexOf('iPad') > -1) || (userAgent.indexOf('iPod') > -1)) ? 'iOS' : '';
+  system.mac = (userAgent.indexOf('Mac') > -1) && !(system.ios) ? 'OS X' : '';
+  system.android = (userAgent.indexOf('Android') > -1) ? 'Android' : '';
 
   // 检测Windows操作系统
   if (system.win) {
@@ -212,23 +251,23 @@ const getSystem = function () {
       if (RegExp['$1'] === 'NT') {
         switch (RegExp['$2']) {
           case '5.1':
-            system.win = 'WindowsXP';
+            systemVersion = 'XP';
             break;
           case '6.0':
-            system.win = 'Vista';
+            systemVersion = 'Vista';
             break;
           case '6.1':
-            system.win = 'Win7';
+            systemVersion = 'Win7';
             break;
           case '6.2':
           case '6.3':
-            system.win = 'Win8';
+            systemVersion = 'Win8';
             break;
           case '6.4':
-            system.win = 'Win10';
+            systemVersion = 'Win10';
             break;
           default:
-            system.win = 'WinNT';
+            systemVersion = 'WinNT';
             break;
         }
       }
@@ -242,24 +281,28 @@ const getSystem = function () {
   }
 
   // 检测iOS版本
-  if (system.mac && userAgent.indexOf('Mobile') > -1) {
-    if (/CPU (?:iPhone )?OS (\d)(?:_\d)+/i.test(userAgent)) {
-      system.ios = 'iOS' + RegExp['$1'];
-    }
-  }
-  else if (system.mac) {
-    system.mac = 'macOS'
+  else if ((system.ios) && (/CPU (?:iPhone)?(?:iPad)?(?:iPod)? OS (\d+_\d+)(?:_\d)?/i.test(userAgent))) {
+    systemVersion = RegExp['$1'].replace('_', '.');
   }
 
   // 检测Android版本
-  if (/Android (\d)(?:\.\d)+/i.test(userAgent)) {
-    system.android = 'Android' + parseInt(RegExp['$1']) + '.0';
+  else if (/Android (\d\.\d)(?:\.\d)?/i.test(userAgent)) {
+    systemVersion = RegExp['$1'];
+  }
+
+  else {
+    systemVersion = 'Others';
   }
 
   for (let i in system) {
     if (system.hasOwnProperty(i) && system[i]) {
-      return system[i]
+      systemName = system[i]
     }
+  }
+
+  return {
+    systemName: systemName,
+    systemVersion: systemVersion
   }
 }
 
@@ -286,7 +329,8 @@ class MonitorClient {
     // this.opt = options;
     this._autoMonitorMemory();
     this._autoMonitorTime();
-    this._autoMonitorPlatform()
+    this._autoMonitorPlatform();
+    this._autoMonitorAPI()
   }
 
   _autoMonitorMemory() {
@@ -345,13 +389,53 @@ class MonitorClient {
 
   _autoMonitorPlatform() {
     let monitorPlatformURL = __WEBPACK_IMPORTED_MODULE_3__constant_constant__["a" /* default */].monitorPlatformURL;
-    let browser = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__platform__["a" /* getBrowser */])();
-    let system = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__platform__["b" /* getSystem */])();
-    let userID = 1234;
-    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__fetch_js__["a" /* post */])(monitorPlatformURL, {
-      'userID': userID,
-      'browser': browser,
-      'system': system
+    let UAcollect = [
+      'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
+      'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50',
+      'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0',
+      'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)',
+      'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)',
+      'Mozilla/5.0 (Windows NT 6.1; rv,2.0.1) Gecko/20100101 Firefox/4.0.1',
+      'Opera/9.80 (Windows NT 6.1; U; en) Presto/2.8.131 Version/11.11',
+      'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SE 2.X MetaSr 1.0; SE 2.X MetaSr 1.0; .NET CLR 2.0.50727; SE 2.X MetaSr 1.0)',
+      'Mozilla/5.0 (iPhone 7; CPU iPhone OS 10_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.0 MQQBrowser/7.4.1',
+      'Mozilla/5.0 (iPhone 6; CPU iPhone OS 9_3_2 like Mac OS X) AppleWebKit/603.2.4 (KHTML, like Gecko) Version/10.0 MQQBrowser/7.4.1',
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11',
+      'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534.57.2 (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2 ',
+      'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.16 (KHTML, like Gecko) Chrome/10.0.648.133 Safari/534.16',
+      'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36',
+      'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Maxthon/4.4.3.4000 Chrome/30.0.1599.101 Safari/537.36',
+      'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 SE 2.X MetaSr 1.0',
+      'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; SV1; QQDownload 732; .NET4.0C; .NET4.0E; SE 2.X MetaSr 1.0)'
+    ];
+    UAcollect.forEach(function (ua) {
+      let browser = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__platform__["a" /* getBrowser */])(ua);
+      let browserName = browser.browserName;
+      let browserVersion = browser.browserVersion;
+      let browserKernel = browser.browserKernel;
+      let browserKernelVersion = browser.browserKernelVersion;
+      let system = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__platform__["b" /* getSystem */])(ua);
+      let systemName = system.systemName;
+      let systemVersion = system.systemVersion;
+      let userID = 1234;
+      __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__fetch_js__["a" /* post */])(monitorPlatformURL, {
+        'userID': userID,
+        'browserName': browserName,
+        'browserVersion': browserVersion,
+        'browserKernel': browserKernel,
+        'browserKernelVersion': browserKernelVersion,
+        'systemName': systemName,
+        'systemVersion': systemVersion
+      });
+    });
+  }
+
+  _autoMonitorAPI() {
+    let monitorAPIURL = __WEBPACK_IMPORTED_MODULE_3__constant_constant__["a" /* default */].monitorAPIURL;
+    __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0__fetch_js__["a" /* post */])(monitorAPIURL, Modernizr, function (responseData) {
+      console.log(responseData);
+    }, function (errMsg) {
+      console.log(errMsg);
     });
   }
 }

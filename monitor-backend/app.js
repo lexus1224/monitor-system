@@ -10,6 +10,7 @@ const cors = require('koa-cors');
 const memory = require('./routes/memory')
 const platform = require('./routes/platform')
 const time = require('./routes/time')
+const api = require('./routes/api')
 
 // error handler
 onerror(app)
@@ -39,5 +40,6 @@ app.use(async (ctx, next) => {
 app.use(memory.routes(), memory.allowedMethods())
 app.use(platform.routes(), platform.allowedMethods())
 app.use(time.routes(), time.allowedMethods())
+app.use(api.routes(), api.allowedMethods())
 
 module.exports = app

@@ -1,5 +1,5 @@
 <template>
-  <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" router>
+  <el-menu class="el-menu-vertical-demo" router>
     <el-submenu index="1">
       <template slot="title">内存监控</template>
       <el-menu-item-group title="">
@@ -25,19 +25,6 @@
 
   </el-menu>
 </template>
-
-<script>
-  export default {
-    methods: {
-      handleOpen (key, keyPath) {
-        console.log(key, keyPath)
-      },
-      handleClose (key, keyPath) {
-        console.log(key, keyPath)
-      }
-    }
-  }
-</script>
 
 <style scoped lang="scss">
   .el-menu {

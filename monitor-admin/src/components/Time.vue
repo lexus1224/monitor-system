@@ -16,9 +16,9 @@
       axios.get(requestURL)
         .then(function (responseData) {
           let Data = responseData.data
-          this.chart = echarts.init(document.getElementById('chart_time'))
+          self.chart = echarts.init(document.getElementById('chart_time'))
           self.drawChart(Data)
-          self.clickAction()
+//          self.clickAction()
         })
     },
     data () {
@@ -29,10 +29,13 @@
     methods: {
       drawChart: function (Data) {
         let options = {
+          title: {
+            text: '页面加载时间'
+          },
           tooltip: {
             trigger: 'axis',
-            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-              type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            axisPointer: {
+              type: 'shadow'
             }
           },
           legend: {
@@ -54,32 +57,34 @@
           ],
           yAxis: [
             {
+              name: 'ms',
               type: 'value'
             }
           ],
           series: [
             {
-              name: 'whiteScreenTime',
+              name: 'onLoadTime',
               type: 'bar',
-              stack: '加载时间',
+//              stack: '加载时间',
               data: Data.map((item) => {
-                return item.whiteScreenTime
+                return item.onLoadTime
               })
             },
             {
               name: 'domReadyTime',
               type: 'bar',
-              stack: '加载时间',
+//              stack: '加载时间',
               data: Data.map((item) => {
                 return item.domReadyTime
               })
             },
             {
-              name: 'onLoadTime',
+              name: 'whiteScreenTime',
               type: 'bar',
-              stack: '加载时间',
+              barGap: '-100%',
+//              stack: '加载时间',
               data: Data.map((item) => {
-                return item.onLoadTime
+                return item.whiteScreenTime
               })
             }
           ]

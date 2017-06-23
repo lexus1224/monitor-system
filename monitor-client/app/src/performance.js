@@ -11,11 +11,11 @@ const collectTime = function () {
     return null;
   }
 
-  let time = window.performance.time;
+  let timing = window.performance.timing;
   let timeCollector = {
-    whiteScreenTime: time.domLoading - time.fetchStart,
-    domReadyTime: time.domComplete - time.fetchStart,
-    onLoadTime: time.loadEventEnd - time.fetchStart
+    whiteScreenTime: timing.domLoading - timing.fetchStart,
+    domReadyTime: timing.domContentLoadedEventEnd - timing.fetchStart,
+    onLoadTime: timing.loadEventEnd - timing.fetchStart
   };
   return timeCollector;
 };
